@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -75,7 +76,13 @@ func (p *PostgresConn) Config() interface{} {
 // Insert is used to add rows to the database with the given endpoint
 func (p *PostgresConn) Insert(data interface{}) error {
 	db := (*p).db
-	d := RideDataPoint(data.(RideDataPoint))
+	d, ok := data.(RideDataPoint)
+	if !ok {
+		err := errors.New("Invalid data")
+		return err
+	}
+
+	// d := RideDataPoint(data.(RideDataPoint))
 
 	result, err := db.Exec(query.InsertDataPoint,
 		d.ID,
