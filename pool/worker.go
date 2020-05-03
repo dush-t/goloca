@@ -20,7 +20,7 @@ func (w worker) spawn() {
 				err := w.Action(job)
 				if err != nil {
 					// w.JobChannel <- job
-					job.CompleteChan <- false
+					job.StatusChan <- err
 					w.respawn(err)
 					return
 				}

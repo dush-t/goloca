@@ -11,6 +11,7 @@ func main() {
 	config := InitializeApp()
 
 	http.Handle("/add_datapoint", api.AddDataPoint(config.Pool))
+	http.HandleFunc("/ws", api.AddDataPointSocket(config.SocketUpgrader, config.Pool))
 
 	log.Println("HTTP server starting at :8080")
 	err := http.ListenAndServe(":8080", nil)

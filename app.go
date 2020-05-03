@@ -1,10 +1,11 @@
 package main
 
 import (
+	"net/http"
 	"os"
-	"path/filepath"
-	"runtime"
 	"strconv"
+
+	"github.com/gorilla/websocket"
 
 	"github.com/dush-t/goloca/db"
 	"github.com/dush-t/goloca/pool"
@@ -14,13 +15,9 @@ import (
 // variables will be passed to functions using dependency
 // injection
 type Config struct {
-	Store db.Store
-	Pool  pool.Pool
-}
-
-func baseDir() string {
-	_, b, _, _ := runtime.Caller(0)
-	return filepath.Dir(b)
+	Store          db.Store
+	Pool           pool.Pool
+	SocketUpgrader websocket.Upgrader
 }
 
 func buildDBInsertAction(conf Config) pool.WorkerAction {
@@ -29,7 +26,7 @@ func buildDBInsertAction(conf Config) pool.WorkerAction {
 		if err != nil {
 			return err
 		}
-		job.CompleteChan <- true
+		job.StatusChan <- true
 		return nil
 	}
 }
@@ -38,8 +35,7 @@ func buildDBInsertAction(conf Config) pool.WorkerAction {
 func InitializeApp() Config {
 
 	// Load environment variables
-	baseDir := baseDir()
-	LoadEnv(filepath.Join(baseDir, "config.env"))
+	LoadEnv("config.env")
 	var conf Config
 
 	// Connect to datastore.
@@ -52,6 +48,14 @@ func InitializeApp() Config {
 	p.Start(numWorkers, buildDBInsertAction(conf))
 
 	conf.Pool = p
+
+	// Setup websocket upgrader
+	upgrader := websocket.Upgrader{
+		CheckOrigin: func(r *http.Request) bool {
+			return true
+		},
+	}
+	conf.SocketUpgrader = upgrader
 
 	return conf
 }

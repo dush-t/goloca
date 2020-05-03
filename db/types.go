@@ -17,10 +17,10 @@ type RideDataPoint struct {
 	VehicleModelID    string  `json:"vehicle_model_id,omitempty"`
 	PackageID         int     `json:"package_id,omitempty"`
 	TravelTypeID      int     `json:"travel_type_id,omitempty"`
-	FromAreaID        int     `json:"from_area_id,omitempty"`
-	ToAreaID          int     `json:"to_area_id,omitempty"`
-	FromCityID        int     `json:"from_city_id,omitempty"`
-	ToCityID          int     `json:"to_city_id,omitempty"`
+	FromAreaID        string  `json:"from_area_id,omitempty"`
+	ToAreaID          string  `json:"to_area_id,omitempty"`
+	FromCityID        string  `json:"from_city_id,omitempty"`
+	ToCityID          string  `json:"to_city_id,omitempty"`
 	FromDate          int64   `json:"from_date,omitempty"`
 	ToDate            int64   `json:"to_date,omitempty"`
 	OnlineBooking     bool    `json:"online_booking,omitempty"`
